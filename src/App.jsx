@@ -128,7 +128,7 @@ export default function BottleBrandingLanding() {
   const onWhatsApp = () => {
     const text = `Hello, I want branded bottles for my hotel/restaurant.%0A%0AName: ${form.name}%0ABusiness: ${form.business}%0ACity: ${form.city}%0APhone: ${form.phone}%0ARequirement: ${form.message}`;
     
-    const phone = "9184855006020";
+    const phone = "918485006020";
     window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
   };
 
