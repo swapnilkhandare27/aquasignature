@@ -182,3 +182,61 @@
     border-right-color: var(--border);
   }
 }
+
+.sample-card{
+  transition:all .5s ease;
+}
+
+.keen-slider{
+  overflow:visible;
+}
+
+.keen-slider__slide{
+  transition:all .6s ease;
+}
+
+/* Only center card pops */
+
+.keen-slider__slide.active .sample-card{
+
+  transform:scale(1.08);
+
+  box-shadow:
+  0 15px 40px rgba(59,130,246,.25);
+
+}
+
+.keen-slider__slide:not(.active) .sample-card{
+
+  transform:scale(1);
+
+}
+
+button{
+  transition:.3s;
+}
+
+button:hover{
+
+  transform:translateY(-50%) scale(1.08);
+
+}
+
+.sample-card{
+  transition: all .5s ease;
+}
+
+.keen-slider__slide.active .sample-card{
+  transform: scale(1.08);
+  box-shadow: 0 15px 40px rgba(59,130,246,.25);
+}
+
+.keen-slider__slide:not(.active) .sample-card{
+  transform: scale(1);
+}
+
+.keen-slider__slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

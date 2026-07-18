@@ -17,12 +17,30 @@ import {
   Hotel,
   BadgeCheck,
 } from "lucide-react";
-
+import { useKeenSlider } from "keen-slider/react";
+import { FaInstagram } from "react-icons/fa";
+import "keen-slider/keen-slider.min.css";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 // shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 50,
+  },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.12,
+duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
+};
 import {
   Accordion,
   AccordionContent,
@@ -40,27 +58,92 @@ export default function BottleBrandingLanding() {
     message: "",
   });
 
-  const [activeSize, setActiveSize] = useState("250ml");
+  const autoplay = (slider) => {
+    let timeout;
+  
+    function clearNextTimeout() {
+      clearTimeout(timeout);
+    }
+  
+    function next() {
+      clearNextTimeout();
+  
+      timeout = setTimeout(() => {
+        slider.next();
+      }, 5000);
+    }
+  
+    slider.on("created", next);
+  
+    slider.on("dragStarted", clearNextTimeout);
+  
+    slider.on("animationEnded", next);
+  
+    slider.on("updated", next);
+  
+    slider.pauseAutoplay = () => {
+      clearNextTimeout();
+    };
+  
+    slider.resumeAutoplay = () => {
+      next();
+    };
+  };
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      loop: true,
+      mode: "snap",
+  
+      defaultAnimation: {
+        duration: 1200,
+      },
+  
+      slides: {
+        perView: 4,
+        spacing: 18,
+      },
+  
+      breakpoints: {
+        "(max-width: 1280px)": {
+          slides: {
+            perView: 3,
+            spacing: 16,
+          },
+        },
+  
+        "(max-width: 1024px)": {
+          slides: {
+            perView: 2,
+            spacing: 14,
+          },
+        },
+  
+        "(max-width: 640px)": {
+          slides: {
+            perView: 1,
+            spacing: 12,
+          },
+        },
+      },
+  
+      slideChanged(slider) {
+        setCurrentSlide(slider.track.details.rel);
+      },
+    },
+    [autoplay]
+  );
+  const [activeSize, setActiveSize] = useState("500");
 
   const sizes = useMemo(
     () => [
       {
-        key: "250ml",
-        title: "250 ml",
-        desc: "Perfect for premium table service & minibar.",
-        moq: "MOQ: 1,000 pcs",
-      },
-      {
         key: "500ml",
         title: "500 ml",
-        desc: "Most popular for dining & guest rooms.",
+        desc: "Perfect for premium table service & minibar.",
         moq: "MOQ: 1,000 pcs",
-      },
-      {
-        key: "750ml",
-        title: "750 ml",
-        desc: "Luxury presentation for fine dining.",
-        moq: "MOQ: 500 pcs",
       },
       {
         key: "1L",
@@ -98,10 +181,6 @@ export default function BottleBrandingLanding() {
       {
         q: "Do you provide bottles for hotels and restaurants only?",
         a: "Yes. We focus only on hospitality brands (hotels, resorts, restaurants, cafés, banquet halls).",
-      },
-      {
-        q: "Do you supply PET bottles?",
-        a: "No. We specialize in premium hospitality bottle packaging options for a luxury look and strong branding.",
       },
       {
         q: "What is the minimum order quantity (MOQ)?",
@@ -148,7 +227,7 @@ export default function BottleBrandingLanding() {
               <Droplets className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <p className="text-sm font-semibold tracking-wide">AquaSignature</p>
+              <p className="text-sm font-semibold tracking-wide">Droplets Ventures</p>
               <p className="text-xs text-white/60">Hotel & Restaurant Bottle Branding</p>
             </div>
           </div>
@@ -206,7 +285,7 @@ export default function BottleBrandingLanding() {
               className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs text-white/80"
             >
               <Sparkles className="h-4 w-4" />
-              Premium Bottle Packaging for Hospitality
+              Premium bottle packaging for your hotels and restaurants
             </motion.div>
 
             <motion.h1
@@ -300,7 +379,7 @@ export default function BottleBrandingLanding() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-sm text-white/70">Exclusive for</p>
-                        <h3 className="mt-1 text-2xl font-semibold">Hospitality Brands</h3>
+                        <h3 className="mt-1 text-2xl font-semibold bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-transparent">Hospitality Brands</h3>
                         <p className="mt-2 text-sm text-white/70">
                           Hotels • Restaurants • Resorts • Banquet Halls
                         </p>
@@ -406,7 +485,7 @@ export default function BottleBrandingLanding() {
                 <Hotel className="h-4 w-4" />
                 <p className="font-medium text-white">Hotels</p>
               </div>
-              <p className="mt-2 text-xs">In-room bottles & minibar supply</p>
+              <p className="mt-2 text-xs">In-room bottles supply</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-neutral-950/40 p-4">
               <div className="flex items-center gap-2">
@@ -501,7 +580,7 @@ export default function BottleBrandingLanding() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-neutral-950">
                     {s.icon}
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+                  <h3 className="mt-4 text-lg font-semibold bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-transparent">{s.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-white/70">
                     {s.desc}
                   </p>
@@ -552,7 +631,7 @@ export default function BottleBrandingLanding() {
                 <p className="text-xs uppercase tracking-widest text-white/60">
                   Selected
                 </p>
-                <h3 className="mt-2 text-3xl font-semibold">
+                <h3 className="mt-2 text-3xl font-semibold text-white">
                   {sizes.find((x) => x.key === activeSize)?.title}
                 </h3>
                 <p className="mt-2 text-white/70">
@@ -660,69 +739,362 @@ export default function BottleBrandingLanding() {
                 title: "Delivery",
                 desc: "Secure carton dispatch with multi-city logistics.",
               },
-            ].map((p) => (
-              <Card
-                key={p.step}
-                className="rounded-3xl border-white/10 bg-white/5"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-white/70">{p.step}</p>
-                    <div className="h-10 w-10 rounded-2xl bg-white/10" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/70">
-                    {p.desc}
-                  </p>
-                </CardContent>
-              </Card>
+            ].map((p, index) => (
+              <motion.div
+    key={p.step}
+    custom={index}
+    variants={fadeUp}
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.25 }}
+    className="h-full"
+  >
+    <Card className="h-full rounded-3xl border-white/10 bg-white/5">
+      <CardContent className="flex h-full flex-col p-6">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-white/70">{p.step}</p>
+          <div className="h-10 w-10 rounded-2xl bg-white/10" />
+        </div>
+
+        <h3 className="mt-4 bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-lg font-semibold text-transparent">
+          {p.title}
+        </h3>
+
+        <p className="mt-2 text-sm leading-relaxed text-white/70">
+          {p.desc}
+        </p>
+      </CardContent>
+    </Card>
+  </motion.div>
             ))}
           </div>
         </div>
       </section>
+      <section className="pt-0.5 pb-5">
+  <div className="container mx-auto max-w-7xl px-4 sm:px-6 md:px-10 lg:px-20">
+
+    {/* Heading */}
+
+    <div className="mb-14 text-center">
+
+    <div className="mb-14 flex items-center justify-center">
+
+  {/* Left Line */}
+  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-sky-400/50 to-sky-400/50"></div>
+
+  {/* Badge */}
+  <div className="rounded-full border border-sky-400/30 bg-[#0B1220]/80 px-5 py-2 backdrop-blur-xl shadow-[0_0_12px_rgba(59,130,246,0.12)]">
+    <span className="bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-sm font-semibold tracking-wide text-transparent">
+      Premium Collection
+    </span>
+  </div>
+
+  {/* Right Line */}
+  <div className="h-px flex-1 bg-gradient-to-l from-transparent via-sky-400/50 to-sky-400/50"></div>
+
+</div>
+
+      <h2 className="mt-5 text-4xl font-bold bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-transparent">
+        Our Sample Products
+      </h2>
+
+      <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-white/70">
+        Every bottle is crafted with premium quality labels, elegant finishing,
+        and customized branding to enhance the hospitality experience.
+      </p>
+
+    </div>
+
+    {/* Slider */}
+
+    <div className="relative">
+
+      {/* Left Button */}
+
+      <button
+        onClick={() => {
+          instanceRef.current?.pauseAutoplay();
+          instanceRef.current?.prev();
+        
+          setTimeout(() => {
+            instanceRef.current?.resumeAutoplay();
+          }, 5000);
+        }}
+        className="absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 p-2 backdrop-blur-md transition hover:bg-sky-500"
+      >
+        <ChevronLeft className="h-5 w-5 text-white" />
+      </button>
+
+      <div
+        ref={sliderRef}
+        className="keen-slider px-2 sm:px-6 md:px-10"
+      >
+
+        {[
+          {
+            img: "/samples/newsample2.png",
+            title: "Luxury Hotel Bottle",
+            quote: "Designed for premium hospitality."
+          },
+
+          {
+            img: "/samples/newsapmple6.png",
+            title: "Restaurant Collection",
+            quote: "Elegant branding for every table."
+          },
+
+          {
+            img: "/samples/newsample1.png",
+            title: "Corporate Branding",
+            quote: "Your logo. Your identity."
+          },
+
+          {
+            img: "/samples/newdesign.png",
+            title: "Premium Packaging",
+            quote: "Quality that guests notice."
+          },
+
+          {
+            img: "/samples/newsample4.png",
+            title: "Custom Labels",
+            quote: "Luxury in every detail."
+          }
+
+        ].map((item, index) => (
+
+          <div
+            className={`keen-slider__slide ${
+              currentSlide === index ? "active" : ""
+            }`}
+            key={index}
+          >
+
+<Card className="mx-auto max-w-[260px] overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-0">
+  <img
+    src={item.img}
+    alt={`Sample ${index + 1}`}
+    className="block h-[340px] w-full object-cover hover:scale-105 transition-transform duration-500"
+  />
+</Card>
+
+          </div>
+
+        ))}
+
+      </div>
+
+      {/* Right Button */}
+
+      <button
+        onClick={() => {
+          instanceRef.current?.pauseAutoplay();
+          instanceRef.current?.next();
+        
+          setTimeout(() => {
+            instanceRef.current?.resumeAutoplay();
+          }, 5000);
+        }}
+        className="absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 p-2 backdrop-blur-md transition hover:bg-sky-500"
+      >
+        <ChevronRight className="h-5 w-5 text-white" />
+      </button>
+
+    </div>
+  </div>
+</section>
+<div className="relative my-20">
+  <div className="mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-sky-400/50 to-transparent" />
+
+  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-400/30 bg-[#0B1220] px-5 py-2 backdrop-blur-xl">
+    <span className="bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-sm font-semibold text-transparent">
+    Label Designs
+    </span>
+  </div>
+</div>
+<section className="pb-20">
+  <div className="container mx-auto max-w-7xl px-4 sm:px-6 md:px-10 lg:px-20">
+
+    {/* Heading */}
+    <div className="mb-14 text-center">
+
+     
+
+      <h2 className="mt-5 text-4xl font-bold bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-transparent">
+        Choose Your Label Style
+      </h2>
+
+      <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-white/70">
+        Select from our premium label designs or customize your own branding
+        style for hotels, restaurants, resorts, and corporate events.
+      </p>
+
+    </div>
+
+
+    {/* Label Cards */}
+
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+      {[
+        {
+          img: "/labels/label1.jpeg",
+          title: "Hotel Gavran Tadka"
+        },
+        {
+          img: "/labels/label2.jpeg",
+          title: "Hotel Chulangan"
+        },
+        {
+          img: "/labels/labelnew.jpeg",
+          title: "Hotel Tandav"
+        },
+        {
+          img: "/labels/label4.jpg",
+          title: "Custom Branding"
+        },
+
+      ].map((item,index)=>(
+
+        <div key={index} className="group">
+
+          {/* Card */}
+
+          <div
+  className="
+    overflow-hidden
+    rounded-3xl
+    border border-white/10
+    bg-white/5
+    backdrop-blur-xl
+    w-full
+    max-w-[420px]
+    h-[260px]
+    sm:h-[300px]
+    md:h-[340px]
+  "
+>
+  <img
+    src={item.img}
+    alt={item.title}
+    className="
+      block
+      w-full
+      h-full
+      object-cover
+      rounded-3xl
+    "
+  />
+</div>
+
+
+          {/* Title */}
+
+          <h3
+            className="
+            mt-5
+            text-center
+            text-lg
+            font-medium
+            tracking-wide
+            bg-gradient-to-r
+            from-[#B8E6FF]
+            to-[#3B82F6]
+            bg-clip-text
+            text-transparent
+            "
+          >
+            {item.title}
+          </h3>
+
+
+        </div>
+
+      ))}
+
+    </div>
+
+
+  </div>
+</section>
+      
 
       {/* TESTIMONIALS */}
       <section className="border-y border-white/10 bg-white/5">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-white/60">
-                Trusted
-              </p>
-              <h2 className="mt-2 text-3xl font-semibold md:text-4xl">
-                Hospitality Clients Love the Finish
-              </h2>
-              <p className="mt-3 max-w-2xl text-white/70">
-                Premium look, consistent supply, and fast response.
-              </p>
-            </div>
-          </div>
+  <div className="mx-auto max-w-6xl px-4 py-16">
 
-          <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <Card
-                key={t.name}
-                className="rounded-3xl border-white/10 bg-neutral-950/40"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-1 text-white">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4" />
-                    ))}
-                  </div>
-                  <p className="mt-4 text-sm leading-relaxed text-white/70">
-                    “{t.text}”
-                  </p>
-                  <div className="mt-5 border-t border-white/10 pt-4">
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-white/60">{t.org}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+    {/* Heading */}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7 }}
+      className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end"
+    >
+      <div>
+        <p className="text-xs uppercase tracking-widest text-white/60">
+          Trusted
+        </p>
+
+        <h2 className="mt-2 text-3xl font-semibold md:text-4xl">
+          Hospitality Clients Love the Finish
+        </h2>
+
+        <p className="mt-3 max-w-2xl text-white/70">
+          Premium look, consistent supply, and fast response.
+        </p>
+      </div>
+    </motion.div>
+
+    {/* Testimonials */}
+    <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
+      {testimonials.map((t, index) => (
+        <motion.div
+          key={t.name}
+          custom={index}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="h-full"
+        >
+          <Card className="h-full rounded-3xl border border-white/10 bg-neutral-950/40 transition-all duration-300 hover:-translate-y-2 hover:border-sky-400/30">
+            <CardContent className="flex h-full flex-col p-6">
+
+              {/* Rating */}
+              <div className="flex items-center gap-1 text-yellow-400">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-4 w-4 fill-current"
+                  />
+                ))}
+              </div>
+
+              {/* Review */}
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-white/70">
+                “{t.text}”
+              </p>
+
+              {/* User */}
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <p className="bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-sm font-semibold text-transparent">
+                  {t.name}
+                </p>
+
+                <p className="mt-1 text-xs text-white/60">
+                  {t.org}
+                </p>
+              </div>
+
+            </CardContent>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+
+  </div>
+</section>
 
       {/* FAQ */}
       <section id="faq">
@@ -762,131 +1134,206 @@ export default function BottleBrandingLanding() {
 
       {/* CONTACT */}
       <section id="contact" className="border-t border-white/10">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-white/60">
-                Contact
-              </p>
-              <h2 className="mt-2 text-3xl font-semibold md:text-4xl">
-                Request a Quote / Sample
-              </h2>
-              <p className="mt-3 max-w-xl text-white/70">
-                Send your details and we will reply with bottle options, MOQ,
-                pricing, and delivery timeline.
-              </p>
+  <div className="mx-auto max-w-6xl px-4 py-16">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <Phone className="h-5 w-5 text-white" />
-                  <div>
-                    <p className="text-sm font-semibold">Phone / WhatsApp</p>
-                    <p className="text-sm text-white/70">+91 99999 99999</p>
-                  </div>
-                </div>
+      {/* LEFT SIDE */}
+      <div>
+        <p className="text-xs uppercase tracking-widest text-white/60">
+          Contact
+        </p>
 
-                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <Mail className="h-5 w-5 text-white" />
-                  <div>
-                    <p className="text-sm font-semibold">Email</p>
-                    <p className="text-sm text-white/70">sales@aquasignature.com</p>
-                  </div>
-                </div>
+        <h2 className="mt-2 text-3xl font-semibold md:text-4xl">
+          Request a Quote / Sample
+        </h2>
 
-                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <MapPin className="h-5 w-5 text-white" />
-                  <div>
-                    <p className="text-sm font-semibold">Service Area</p>
-                    <p className="text-sm text-white/70">Multi-city delivery available</p>
-                  </div>
-                </div>
-              </div>
+        <p className="mt-3 max-w-xl text-white/70">
+          Send your details and we will reply with bottle options, MOQ,
+          pricing, and delivery timeline.
+        </p>
 
-              <div className="mt-8 rounded-3xl border border-white/10 bg-neutral-950/40 p-6">
-                <p className="text-sm font-semibold">Fast Response Promise</p>
-                <p className="mt-2 text-sm text-white/70">
-                  We respond within <span className="text-white">2–6 hours</span>
-                  during business hours.
+        <div className="mt-8 space-y-4">
+
+          {/* Phone */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 0.9,
+              delay: 0.2,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <div className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:-translate-y-1 hover:border-sky-400/40 hover:bg-white/10 hover:shadow-[0_10px_25px_rgba(59,130,246,0.15)]">
+              <Phone className="h-5 w-5 text-white transition-all duration-500 group-hover:scale-110 group-hover:text-sky-300" />
+
+              <div>
+                <p className="text-sm font-semibold">
+                  Phone / WhatsApp
+                </p>
+
+                <p className="text-sm text-white/70">
+                  +91 84850 06020
                 </p>
               </div>
             </div>
+          </motion.div>
 
-            <Card className="rounded-3xl border-white/10 bg-white/5">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold">Send Inquiry</h3>
-                <p className="mt-2 text-sm text-white/70">
-                  Share your bottle requirement and we will contact you.
+          {/* Email */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 0.9,
+              delay: 0.45,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <div className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:-translate-y-1 hover:border-sky-400/40 hover:bg-white/10 hover:shadow-[0_10px_25px_rgba(59,130,246,0.15)]">
+              <Mail className="h-5 w-5 text-white transition-all duration-500 group-hover:scale-110 group-hover:text-sky-300" />
+
+              <div>
+                <p className="text-sm font-semibold">
+                  Email
                 </p>
 
-                <div className="mt-6 grid grid-cols-1 gap-4">
-                  <Input
-                    className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
-                    placeholder="Your Name"
-                    value={form.name}
-                    onChange={(e) => onChange("name", e.target.value)}
-                  />
+                <p className="text-sm text-white/70">
+                  sales@DropletsVentures.com
+                </p>
+              </div>
+            </div>
+          </motion.div>
 
-                  <Input
-                    className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
-                    placeholder="Hotel / Restaurant Name"
-                    value={form.business}
-                    onChange={(e) => onChange("business", e.target.value)}
-                  />
+          {/* Service Area */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 0.9,
+              delay: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <div className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:-translate-y-1 hover:border-sky-400/40 hover:bg-white/10 hover:shadow-[0_10px_25px_rgba(59,130,246,0.15)]">
+              <MapPin className="h-5 w-5 text-white transition-all duration-500 group-hover:scale-110 group-hover:text-sky-300" />
 
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Input
-                      className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
-                      placeholder="City"
-                      value={form.city}
-                      onChange={(e) => onChange("city", e.target.value)}
-                    />
-                    <Input
-                      className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
-                      placeholder="Phone Number"
-                      value={form.phone}
-                      onChange={(e) => onChange("phone", e.target.value)}
-                    />
-                  </div>
+              <div>
+                <p className="text-sm font-semibold">
+                  Service Area
+                </p>
 
-                  <Textarea
-                    className="min-h-[120px] rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
-                    placeholder="Message (bottle size, quantity, delivery city, etc.)"
-                    value={form.message}
-                    onChange={(e) => onChange("message", e.target.value)}
-                  />
+                <p className="text-sm text-white/70">
+                  Multi-city delivery available
+                </p>
+              </div>
+            </div>
+          </motion.div>
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <Button
-                      className="h-11 rounded-2xl bg-white text-neutral-950 hover:bg-white/90"
-                      onClick={onWhatsApp}
-                    >
-                      Send on WhatsApp
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-11 rounded-2xl border-white/20 bg-transparent text-white hover:bg-white/10"
-                      onClick={() => {
-                        alert(
-                          "Demo form only. Connect this to your backend or email service." 
-                        );
-                      }}
-                    >
-                      Submit Form
-                    </Button>
-                  </div>
-
-                  <p className="text-xs text-white/50">
-                    By submitting, you agree to be contacted via call/WhatsApp.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
-      </section>
 
+        {/* Fast Response Promise - Unchanged */}
+        <div className="mt-8 rounded-3xl border border-white/10 bg-neutral-950/40 p-6">
+          <p className="text-sm font-semibold">
+            Fast Response Promise
+          </p>
+
+          <p className="mt-2 text-sm text-white/70">
+            We respond within <span className="text-white">2–6 hours</span>
+            {" "}during business hours.
+          </p>
+        </div>
+
+      </div>
+
+      {/* RIGHT SIDE - EXACTLY SAME AS YOUR CODE */}
+      <Card className="rounded-3xl border-white/10 bg-white/5">
+        <CardContent className="p-6">
+
+          <h3 className="text-xl font-semibold bg-gradient-to-r from-[#B8E6FF] to-[#3B82F6] bg-clip-text text-transparent">
+            Send Inquiry
+          </h3>
+
+          <p className="mt-2 text-sm text-white/70">
+            Share your bottle requirement and we will contact you.
+          </p>
+
+          {/* KEEP EVERYTHING BELOW EXACTLY AS YOU ALREADY HAVE */}
+
+          <div className="mt-6 grid grid-cols-1 gap-4">
+
+            <Input
+              className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
+              placeholder="Your Name"
+              value={form.name}
+              onChange={(e) => onChange("name", e.target.value)}
+            />
+
+            <Input
+              className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
+              placeholder="Hotel / Restaurant Name"
+              value={form.business}
+              onChange={(e) => onChange("business", e.target.value)}
+            />
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Input
+                className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
+                placeholder="City"
+                value={form.city}
+                onChange={(e) => onChange("city", e.target.value)}
+              />
+
+              <Input
+                className="h-11 rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
+                placeholder="Phone Number"
+                value={form.phone}
+                onChange={(e) => onChange("phone", e.target.value)}
+              />
+            </div>
+
+            <Textarea
+              className="min-h-[120px] rounded-2xl border-white/15 bg-neutral-950/40 text-white placeholder:text-white/40"
+              placeholder="Message (bottle size, quantity, delivery city, etc.)"
+              value={form.message}
+              onChange={(e) => onChange("message", e.target.value)}
+            />
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button
+                className="h-11 rounded-2xl bg-white text-neutral-950 hover:bg-white/90"
+                onClick={onWhatsApp}
+              >
+                Send on WhatsApp
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-11 rounded-2xl border-white/20 bg-transparent text-white hover:bg-white/10"
+                onClick={() => {
+                  alert("Demo form only. Connect this to your backend or email service.");
+                }}
+              >
+                Submit Form
+              </Button>
+            </div>
+
+            <p className="text-xs text-white/50">
+              By submitting, you agree to be contacted via call/WhatsApp.
+            </p>
+
+          </div>
+
+        </CardContent>
+      </Card>
+
+    </div>
+  </div>
+</section>
+   
       {/* FOOTER */}
       <footer className="border-t border-white/10 bg-neutral-950">
         <div className="mx-auto max-w-6xl px-4 py-10">
@@ -897,9 +1344,9 @@ export default function BottleBrandingLanding() {
                   <Droplets className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">AquaSignature</p>
+                  <p className="text-sm font-semibold">Droplets Ventures</p>
                   <p className="text-xs text-white/60">
-                    Bottle Packaging & Branding for Hospitality
+                    Bottle Packaging & Branding
                   </p>
                 </div>
               </div>
@@ -910,17 +1357,75 @@ export default function BottleBrandingLanding() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge className="rounded-full bg-white/10 text-white">Hotels</Badge>
-              <Badge className="rounded-full bg-white/10 text-white">Restaurants</Badge>
-              <Badge className="rounded-full bg-white/10 text-white">Banquets</Badge>
-              <Badge className="rounded-full bg-white/10 text-white">Resorts</Badge>
-            </div>
+  {["Hotels", "Restaurants", "Banquets", "Resorts"].map((item, index) => (
+    <motion.div
+      key={item}
+      initial={{ opacity: 0, x: -30 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{
+        duration: 0.7,
+        delay: index * 0.2,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      <Badge className="rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-white-500/20">
+        {item}
+      </Badge>
+    </motion.div>
+  ))}
+</div>
           </div>
+          
+          <div className="mt-8 border-t border-white/10 pt-6">
+  <div className="flex flex-col items-center justify-between gap-4 text-xs text-white/50 md:flex-row">
 
-          <div className="mt-8 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50 md:flex-row">
-            <p>© {new Date().getFullYear()} AquaSignature. All rights reserved.</p>
-            <p>Designed for Hospitality Bottle Branding Business</p>
-          </div>
+    {/* Left */}
+    <p>
+      © {new Date().getFullYear()} Droplets Ventures. All rights reserved.
+    </p>
+
+    {/* Center */}
+    <a
+  href="https://instagram.com/droplets_ventures_csn"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="group flex items-center gap-2 transition-transform duration-300 hover:scale-105"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    className="h-5 w-5"
+  >
+    <defs>
+      <linearGradient id="instagramGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FEDA75" />
+        <stop offset="25%" stopColor="#FA7E1E" />
+        <stop offset="50%" stopColor="#D62976" />
+        <stop offset="75%" stopColor="#962FBF" />
+        <stop offset="100%" stopColor="#4F5BD5" />
+      </linearGradient>
+    </defs>
+
+    <path
+      fill="url(#instagramGradient)"
+      d="M7.75 2C4.574 2 2 4.574 2 7.75v8.5C2 19.426 4.574 22 7.75 22h8.5C19.426 22 22 19.426 22 16.25v-8.5C22 4.574 19.426 2 16.25 2h-8.5Zm0 2h8.5A3.75 3.75 0 0 1 20 7.75v8.5A3.75 3.75 0 0 1 16.25 20h-8.5A3.75 3.75 0 0 1 4 16.25v-8.5A3.75 3.75 0 0 1 7.75 4Zm8.75 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"
+    />
+  </svg>
+
+  <span className="bg-gradient-to-r from-[#FEDA75] via-[#D62976] to-[#4F5BD5] bg-clip-text font-semibold text-transparent">
+  droplets_ventures_csn
+  </span>
+</a>
+
+    {/* Right */}
+    <p className="text-white/60">
+  💎 Your Brand, Our Craft
+</p>
+
+  </div>
+</div>
+          
         </div>
       </footer>
     </div>
