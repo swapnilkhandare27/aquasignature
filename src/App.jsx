@@ -158,19 +158,19 @@ export default function BottleBrandingLanding() {
   const testimonials = useMemo(
     () => [
       {
-        name: "Operations Manager",
-        org: "Boutique Hotel",
-        text: "Clean branding, premium bottle finish, and timely delivery. Guests notice the difference.",
+        name: "Restaurant Owner",
+        org: "Hotel Anjali",
+        text: "The bottle labels looked elegant and matched our hotel's branding perfectly. The quality exceeded our expectations.",
       },
       {
         name: "Restaurant Owner",
-        org: "Fine Dining",
-        text: "Their label quality is excellent and waterproof. The bottles look high-end on tables.",
+        org: "Hotel Tandav",
+        text: "Excellent print quality, quick delivery, and a professional finish. Our guests appreciated the premium presentation.",
       },
       {
-        name: "Purchase Head",
-        org: "Business Hotel",
-        text: "Monthly supply is consistent. Great support and quick re-orders.",
+        name: "Restaurant Owner",
+        org: "Hotel Chulangan",
+        text: "Professional service, timely delivery, and premium-quality labels. We look forward to ordering again.",
       },
     ],
     []
@@ -262,12 +262,12 @@ export default function BottleBrandingLanding() {
             <Button
               className="rounded-2xl bg-white text-neutral-950 hover:bg-white/90"
               onClick={() => {
-                document.getElementById("contact")?.scrollIntoView({
+                document.getElementById("premium-collection")?.scrollIntoView({
                   behavior: "smooth",
                 });
               }}
             >
-              Get Quote
+              View Samples
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -770,7 +770,7 @@ export default function BottleBrandingLanding() {
           </div>
         </div>
       </section>
-      <section className="pt-0.5 pb-5">
+      <section id="premium-collection" className="pt-0.5 pb-5">
   <div className="container mx-auto max-w-7xl px-4 sm:px-6 md:px-10 lg:px-20">
 
     {/* Heading */}
@@ -938,7 +938,7 @@ export default function BottleBrandingLanding() {
 
       {[
         {
-          img: "/labels/label1.jpeg",
+          img: "/labels/newlabel3.png",
           title: "Hotel Gavran Tadka"
         },
         {
@@ -950,8 +950,8 @@ export default function BottleBrandingLanding() {
           title: "Hotel Tandav"
         },
         {
-          img: "/labels/label4.jpg",
-          title: "Custom Branding"
+          img: "/labels/newlable2.png",
+          title: "Hotel Anjali FastFood"
         },
 
       ].map((item,index)=>(
